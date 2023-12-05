@@ -9,7 +9,7 @@ export default function Home() {
         <Image src="/flare-logo.svg" alt="Flare Logo" width={120} height={50} />
       </Link>
 
-      <div className="flex gap-4 flex-wrap flex-col">
+      <div className="flex gap-4 flex-wrap flex-col w-full">
         <Price symbol="FLR" />
         <Price symbol="BTC" />
         <Price symbol="ETH" />
@@ -19,7 +19,7 @@ export default function Home() {
         <Price symbol="MATIC" />
       </div>
 
-      <p className="pt-6">
+      <p className="pt-6 text-center">
         Prices are provided by{" "}
         <Link
           href="https://docs.flare.network/tech/ftso/"

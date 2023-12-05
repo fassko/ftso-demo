@@ -22,12 +22,12 @@ export default function Price({ symbol }: PriceParams) {
   const [assetPrice, setAssetPrice] = useState<PriceDetails>();
 
   function onRefresh() {
-    setAssetPrice(undefined);
-
     getAssetPrice(symbol);
   }
 
   const getAssetPrice = useCallback(async (symbol: string) => {
+    setAssetPrice(undefined);
+
     console.log(`Getting ${symbol} price ...`);
 
     const provider = new ethers.JsonRpcProvider(FLARE_RCP);
@@ -82,9 +82,10 @@ export default function Price({ symbol }: PriceParams) {
   return (
     <div
       onClick={onRefresh}
-      className="py-2 px-4 mx-auto rounded-xl shadow-md overflow-hidden md:max-w-2xl cursor-pointe bg-gray-50 hover:bg-gray-100 cursor-pointer gap-8 w-[300px]"
+      className="py-2 px-4 mx-auto rounded-xl shadow-md overflow-hidden md:max-w-2xl bg-[#F4F4F4] hover:bg-opacity-50 cursor-pointer gap-8 w-[320px]"
     >
       <h2 className="text-xl font-bold text-gray-900 block">{symbol}</h2>
+
       {assetPrice ? (
         <div>
           <div className="flex">{assetPrice.price}</div>
