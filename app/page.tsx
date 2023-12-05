@@ -30,6 +30,17 @@ export default function Home() {
         </Link>
         .
       </p>
+
+      <p>
+        Github:{" "}
+        <Link
+          href="https://github.com/fassko/ftso-demo"
+          target="_blank"
+          className="font-medium hover:underline"
+        >
+          https://github.com/fassko/ftso-demo
+        </Link>
+      </p>
     </main>
   );
 }
