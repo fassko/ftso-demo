@@ -94,7 +94,7 @@ export default function Price({ symbol }: PriceParams) {
           </div>
         </div>
       ) : (
-        <div>Loading</div>
+        <div>Loading...</div>
       )}
     </div>
   );
