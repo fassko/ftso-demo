@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
-import { ethers, formatUnits, toNumber } from "ethers";
+import { ethers, formatUnits } from "ethers";
+import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
 
 interface PriceParams {
   symbol: string;
@@ -13,10 +14,6 @@ interface PriceDetails {
   price: string;
   time: Date;
 }
-
-const FLARE_RCP = "https://flare-api.flare.network/ext/bc/C/rpc";
-const FLARE_CONTRACT_REGISTRY_ADDRESS =
-  "0xaD67FE66660Fb8dFE9d6b1b4240d8650e30F6019";
 
 export default function Price({ symbol }: PriceParams) {
   const [assetPrice, setAssetPrice] = useState<PriceDetails>();
@@ -33,7 +30,7 @@ export default function Price({ symbol }: PriceParams) {
     const provider = new ethers.JsonRpcProvider(FLARE_RCP);
 
     // get Flare contract registry
-    // // https://docs.flare.network/dev/getting-started/contract-addresses/
+    // https://docs.flare.network/dev/getting-started/contract-addresses/
     const flareContractRegistry = new ethers.Contract(
       FLARE_CONTRACT_REGISTRY_ADDRESS,
       nameToAbi("FlareContractRegistry", "flare").data,
@@ -44,6 +41,15 @@ export default function Price({ symbol }: PriceParams) {
     // https://docs.flare.network/apis/smart-contracts/FlareContractRegistry/
     const ftsoRegistryAddress =
       await flareContractRegistry.getContractAddressByName("FtsoRegistry");
+
+    const ftsoManagerAddress =
+      await flareContractRegistry.getContractAddressByName("FtsoManager");
+
+    const ftsoManager = new ethers.Contract(
+      ftsoManagerAddress,
+      nameToAbi("FtsoManager", "flare").data,
+      provider
+    );
 
     // convert to FTSO registry contract
     // https://docs.flare.network/apis/smart-contracts/FtsoRegistry/

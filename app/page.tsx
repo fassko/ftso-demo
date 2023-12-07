@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Price from "./components/Price";
 import Link from "next/link";
+import PriceReveal from "./components/PriceReveal";
 
 export default function Home() {
   return (
@@ -8,6 +9,8 @@ export default function Home() {
       <Link href="https://flare.network/" target="_blank">
         <Image src="/flare-logo.svg" alt="Flare Logo" width={120} height={50} />
       </Link>
+
+      <PriceReveal />
 
       <div className="flex gap-4 flex-wrap flex-col w-full">
         <Price symbol="FLR" />
