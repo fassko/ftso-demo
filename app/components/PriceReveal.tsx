@@ -139,7 +139,7 @@ export default function PriceReveal() {
             {epochData.priceEpochRevealEnd.toLocaleTimeString()}
           </div>
           <div>
-            Price epoch reveal: {epochData.current.toLocaleDateString()}{" "}
+            Current time: {epochData.current.toLocaleDateString()}{" "}
             {epochData.current.toLocaleTimeString()}
           </div>
         </>
