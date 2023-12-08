@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
 import { ethers, formatUnits } from "ethers";
 import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
+import { EpochData } from "../Interfaces";
 
 interface PriceParams {
   symbol: string;
@@ -17,6 +18,7 @@ interface PriceDetails {
 
 export default function Price({ symbol }: PriceParams) {
   const [assetPrice, setAssetPrice] = useState<PriceDetails>();
+  const [epochData, setEpochData] = useState<EpochData>();
 
   function onRefresh() {
     getAssetPrice(symbol);
@@ -79,11 +81,48 @@ export default function Price({ symbol }: PriceParams) {
     });
 
     setAssetPrice({ price: USDollar.format(Number(assetPrice)), time: time });
+
+    const [
+      priceEpochId,
+      priceEpochStartTimestamp,
+      priceEpochEndTimestamp,
+      priceEpochRevealEndTimestamp,
+      currentTimestamp,
+    ] = await ftsoManager.getCurrentPriceEpochData();
+    console.log("priceEpochId", priceEpochId);
+    console.log("priceEpochStartTimestamp", priceEpochStartTimestamp);
+    console.log("priceEpochEndTimestamp", priceEpochEndTimestamp);
+    console.log(
+      "priceEpocpriceEpochRevealEndTimestamphId",
+      priceEpochRevealEndTimestamp
+    );
+    console.log("currentTimestamp", currentTimestamp);
+
+    setEpochData({
+      priceEpochId: Number(priceEpochId),
+      priceEpochStartTimestamp: Number(priceEpochStartTimestamp),
+      priceEpochEndTimestamp: Number(priceEpochEndTimestamp),
+      priceEpochRevealEndTimestamp: Number(priceEpochRevealEndTimestamp),
+      currentTimestamp: Number(currentTimestamp),
+    });
   }, []);
 
   useEffect(() => {
     getAssetPrice(symbol);
   }, [getAssetPrice, symbol]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentTimestamp = Date.now() / 1000;
+      if (
+        epochData &&
+        currentTimestamp > epochData.priceEpochRevealEndTimestamp
+      ) {
+        onRefresh();
+      }
+    }, 60 * 1000);
+    return () => clearInterval(interval);
+  }, [epochData, onRefresh]);
 
   return (
     <div

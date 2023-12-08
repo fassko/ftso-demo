@@ -5,22 +5,11 @@ import { useCallback, useEffect, useState } from "react";
 import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
 import { ethers } from "ethers";
 import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
-
-interface EpochData {
-  priceEpochId: number;
-  priceEpochStart: Date;
-  priceEpochEnd: Date;
-  priceEpochRevealEnd: Date;
-  current: Date;
-}
+import { EpochData } from "../Interfaces";
 
 export default function PriceReveal() {
   const [epochData, setEpochData] = useState<EpochData>();
   const [currentEpochPercentage, setCurrentEpochPercentage] = useState(0);
-
-  function onRefresh() {
-    getPriceReveal();
-  }
 
   function calculatePercentage(
     startTimestamp: number,
@@ -70,23 +59,12 @@ export default function PriceReveal() {
       priceEpochRevealEndTimestamp,
       currentTimestamp,
     ] = await ftsoManager.getCurrentPriceEpochData();
-    console.log("priceEpochId", priceEpochId);
-    console.log("priceEpochStartTimestamp", priceEpochStartTimestamp);
-    console.log("priceEpochEndTimestamp", priceEpochEndTimestamp);
-    console.log(
-      "priceEpocpriceEpochRevealEndTimestamphId",
-      priceEpochRevealEndTimestamp
-    );
-    console.log("currentTimestamp", currentTimestamp);
-
     setEpochData({
       priceEpochId: Number(priceEpochId),
-      priceEpochStart: new Date(Number(priceEpochStartTimestamp) * 1000),
-      priceEpochEnd: new Date(Number(priceEpochEndTimestamp) * 1000),
-      priceEpochRevealEnd: new Date(
-        Number(priceEpochRevealEndTimestamp) * 1000
-      ),
-      current: new Date(Number(currentTimestamp) * 1000),
+      priceEpochStartTimestamp: Number(priceEpochStartTimestamp),
+      priceEpochEndTimestamp: Number(priceEpochEndTimestamp),
+      priceEpochRevealEndTimestamp: Number(priceEpochRevealEndTimestamp),
+      currentTimestamp: Number(currentTimestamp),
     });
 
     setCurrentEpochPercentage(
@@ -98,26 +76,45 @@ export default function PriceReveal() {
     );
   }, []);
 
+  const onRefresh = useCallback(() => getPriceReveal(), [getPriceReveal]);
+
   useEffect(() => {
     getPriceReveal();
+  }, [getPriceReveal, onRefresh]);
 
-    const timerID = setInterval(onRefresh, 5 * 1000);
+  useEffect(() => {
+    const updatePercentage = () => {
+      if (!epochData) return;
 
-    // const timerID = setInterval(() => onRefresh, 60000);
-    // return () => {
-    //   clearInterval(timerID);
-    // };
+      const currentTimestamp = Date.now() / 1000;
 
-    return () => {
-      clearInterval(timerID);
+      if (currentTimestamp > epochData.priceEpochRevealEndTimestamp) {
+        onRefresh();
+      } else {
+        setCurrentEpochPercentage(
+          calculatePercentage(
+            epochData.priceEpochStartTimestamp,
+            epochData.priceEpochRevealEndTimestamp,
+            currentTimestamp
+          )
+        );
+      }
     };
-  }, [getPriceReveal]);
+
+    const interval = setInterval(updatePercentage, 1000);
+
+    return () => clearInterval(interval);
+  }, [epochData, onRefresh]);
+
+  function convertTodate(timestamp: number) {
+    return new Date(timestamp * 1000);
+  }
 
   return (
     <div onClick={onRefresh}>
       <div className="w-full bg-[#F4F4F4] rounded-full h-2.5 mb-4">
         <div
-          className="bg-[#E62058] h-2.5 rounded-full"
+          className="bg-[#E62058] h-2.5 rounded-full shimmer"
           style={{ width: `${currentEpochPercentage}%` }}
         ></div>
       </div>
@@ -126,21 +123,31 @@ export default function PriceReveal() {
         <>
           <div>Price epoch ID: {epochData.priceEpochId}</div>
           <div>
-            Price epoch start: {epochData.priceEpochStart.toLocaleDateString()}{" "}
-            {epochData.priceEpochStart.toLocaleTimeString()}
+            Price epoch start:{" "}
+            {convertTodate(
+              epochData.priceEpochStartTimestamp
+            ).toLocaleDateString()}{" "}
+            {convertTodate(
+              epochData.priceEpochStartTimestamp
+            ).toLocaleTimeString()}
           </div>
           <div>
-            Price epoch end: {epochData.priceEpochEnd.toLocaleDateString()}{" "}
-            {epochData.priceEpochEnd.toLocaleTimeString()}
+            Price epoch end:{" "}
+            {convertTodate(
+              epochData.priceEpochEndTimestamp
+            ).toLocaleDateString()}{" "}
+            {convertTodate(
+              epochData.priceEpochEndTimestamp
+            ).toLocaleTimeString()}
           </div>
           <div>
             Price epoch reveal:{" "}
-            {epochData.priceEpochRevealEnd.toLocaleDateString()}{" "}
-            {epochData.priceEpochRevealEnd.toLocaleTimeString()}
-          </div>
-          <div>
-            Current time: {epochData.current.toLocaleDateString()}{" "}
-            {epochData.current.toLocaleTimeString()}
+            {convertTodate(
+              epochData.priceEpochRevealEndTimestamp
+            ).toLocaleDateString()}{" "}
+            {convertTodate(
+              epochData.priceEpochRevealEndTimestamp
+            ).toLocaleTimeString()}
           </div>
         </>
       )}
