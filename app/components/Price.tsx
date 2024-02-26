@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
-import { ethers, formatUnits } from "ethers";
+import { ethers } from "ethers";
 import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
 import { EpochData } from "../Interfaces";
+import { BigNumber } from "bignumber.js";
 
 interface PriceParams {
   symbol: string;
@@ -66,12 +67,10 @@ export default function Price({ symbol }: PriceParams) {
     const [price, timestamp, decimals] = await ftsoRegistry[
       "getCurrentPriceWithDecimals(string)"
     ](symbol);
-    const assetPrice = formatUnits(price, decimals);
+    const assetPrice =
+      new BigNumber(price).toNumber() /
+      100 ** new BigNumber(decimals).toNumber();
     const time = new Date(Number(timestamp) * 1000);
-
-    console.log(`Calculated at ${time}`);
-    // console.log(`${Number(price) / Math.pow(10, Number(decimals))} USD`);
-    console.log(`${formatUnits(price, decimals)} USD`);
 
     let USDollar = new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -125,10 +124,7 @@ export default function Price({ symbol }: PriceParams) {
   }, [epochData, onRefresh]);
 
   return (
-    <div
-      onClick={onRefresh}
-      className="py-2 px-4 mx-auto rounded-xl shadow-md overflow-hidden md:max-w-2xl bg-[#F4F4F4] hover:bg-opacity-50 cursor-pointer gap-8 w-[320px]"
-    >
+    <>
       <h2 className="text-xl font-bold text-gray-900 block">{symbol}</h2>
 
       {assetPrice ? (
@@ -141,6 +137,6 @@ export default function Price({ symbol }: PriceParams) {
       ) : (
         <div>Loading...</div>
       )}
-    </div>
+    </>
   );
 }
