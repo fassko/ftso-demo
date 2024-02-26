@@ -18,7 +18,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="w-[95%] md:w-[70%] mx-auto">
+    <div className="w-[95%] md:w-[70%] mx-auto p-4">
       <Flex
         mih={50}
         gap="lg"
