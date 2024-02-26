@@ -7,9 +7,12 @@ import { ethers } from "ethers";
 import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
 import { EpochData } from "../Interfaces";
 import { BigNumber } from "bignumber.js";
+import { Accordion } from "@mantine/core";
+import History from "./History";
 
 interface PriceParams {
   symbol: string;
+  color: string;
 }
 
 interface PriceDetails {
@@ -17,7 +20,7 @@ interface PriceDetails {
   time: Date;
 }
 
-export default function Price({ symbol }: PriceParams) {
+export default function Price({ symbol, color }: PriceParams) {
   const [assetPrice, setAssetPrice] = useState<PriceDetails>();
   const [epochData, setEpochData] = useState<EpochData>();
 
@@ -124,19 +127,26 @@ export default function Price({ symbol }: PriceParams) {
   }, [epochData, onRefresh]);
 
   return (
-    <>
-      <h2 className="text-xl font-bold text-gray-900 block">{symbol}</h2>
+    <Accordion.Item key={symbol} value={symbol}>
+      <Accordion.Control>
+        <>
+          <h2 className="text-xl font-bold text-gray-900 block">{symbol}</h2>
 
-      {assetPrice ? (
-        <div>
-          <div className="flex">{assetPrice.price}</div>
-          <div>
-            {`${assetPrice.time.toLocaleTimeString()} ${assetPrice.time.toLocaleDateString()}`}
-          </div>
-        </div>
-      ) : (
-        <div>Loading...</div>
-      )}
-    </>
+          {assetPrice ? (
+            <div>
+              <div className="flex">{assetPrice.price}</div>
+              <div>
+                {`${assetPrice.time.toLocaleTimeString()} ${assetPrice.time.toLocaleDateString()}`}
+              </div>
+            </div>
+          ) : (
+            <div>Loading...</div>
+          )}
+        </>
+      </Accordion.Control>
+      <Accordion.Panel>
+        <History symbol={symbol} color={color} />
+      </Accordion.Panel>
+    </Accordion.Item>
   );
 }

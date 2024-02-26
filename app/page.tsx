@@ -5,7 +5,7 @@ import History from "./components/History";
 import Link from "next/link";
 import PriceReveal from "./components/PriceReveal";
 import Price from "./components/Price";
-import { Accordion, Flex, Container } from "@mantine/core";
+import { Accordion, Flex } from "@mantine/core";
 
 export default function Home() {
   const tokens = [
@@ -18,7 +18,7 @@ export default function Home() {
   ];
 
   return (
-    <Container style={{ width: "80%" }}>
+    <div className="w-[95%] md:w-[70%] mx-auto">
       <Flex
         mih={50}
         gap="lg"
@@ -46,14 +46,11 @@ export default function Home() {
         >
           {tokens.map((token) => {
             return (
-              <Accordion.Item key={token.symbol} value={token.symbol}>
-                <Accordion.Control>
-                  <Price symbol={token.symbol} />
-                </Accordion.Control>
-                <Accordion.Panel>
-                  <History symbol={token.symbol} color={token.color} />
-                </Accordion.Panel>
-              </Accordion.Item>
+              <Price
+                symbol={token.symbol}
+                color={token.color}
+                key={token.symbol}
+              />
             );
           })}
         </Accordion>
@@ -81,6 +78,6 @@ export default function Home() {
           </Link>
         </p>
       </Flex>
-    </Container>
+    </div>
   );
 }
