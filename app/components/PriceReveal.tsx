@@ -16,11 +16,6 @@ export default function PriceReveal() {
     endTimestamp: number,
     currentTimestamp: number
   ) {
-    // Convert timestamps to milliseconds if they are in seconds
-    startTimestamp = startTimestamp * 1000;
-    endTimestamp = endTimestamp * 1000;
-    currentTimestamp = currentTimestamp * 1000;
-
     // Calculate total duration and elapsed time
     var totalDuration = endTimestamp - startTimestamp;
     var elapsedTime = currentTimestamp - startTimestamp;
@@ -59,6 +54,12 @@ export default function PriceReveal() {
       priceEpochRevealEndTimestamp,
       currentTimestamp,
     ] = await ftsoManager.getCurrentPriceEpochData();
+
+    console.log("currentTimestamp: ftso", currentTimestamp);
+    const timestampWithMilliseconds = Date.now();
+    const currentTimestampJS = Math.floor(timestampWithMilliseconds / 1000);
+    console.log("currentTimestampJS", currentTimestampJS);
+
     setEpochData({
       priceEpochId: Number(priceEpochId),
       priceEpochStartTimestamp: Number(priceEpochStartTimestamp),
@@ -70,7 +71,7 @@ export default function PriceReveal() {
     setCurrentEpochPercentage(
       calculatePercentage(
         Number(priceEpochStartTimestamp),
-        Number(priceEpochRevealEndTimestamp),
+        Number(priceEpochEndTimestamp),
         Number(currentTimestamp)
       )
     );
@@ -86,22 +87,23 @@ export default function PriceReveal() {
     const updatePercentage = () => {
       if (!epochData) return;
 
-      const currentTimestamp = Date.now() / 1000;
+      const timestampWithMilliseconds = Date.now();
+      const currentTimestamp = Math.floor(timestampWithMilliseconds / 1000);
 
-      if (currentTimestamp > epochData.priceEpochRevealEndTimestamp) {
+      if (currentTimestamp > epochData.priceEpochEndTimestamp) {
         onRefresh();
       } else {
         setCurrentEpochPercentage(
           calculatePercentage(
             epochData.priceEpochStartTimestamp,
-            epochData.priceEpochRevealEndTimestamp,
+            epochData.priceEpochEndTimestamp,
             currentTimestamp
           )
         );
       }
     };
 
-    const interval = setInterval(updatePercentage, 1000);
+    const interval = setInterval(updatePercentage, 5 * 1000);
 
     return () => clearInterval(interval);
   }, [epochData, onRefresh]);

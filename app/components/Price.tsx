@@ -115,14 +115,15 @@ export default function Price({ symbol, color }: PriceParams) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const currentTimestamp = Date.now() / 1000;
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+
       if (
         epochData &&
         currentTimestamp > epochData.priceEpochRevealEndTimestamp
       ) {
         onRefresh();
       }
-    }, 60 * 1000);
+    }, 10 * 1000);
     return () => clearInterval(interval);
   }, [epochData, onRefresh]);
 
