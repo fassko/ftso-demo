@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
-import { ethers } from "ethers";
+import { ethers, formatUnits } from "ethers";
 import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
 import { EpochData } from "../Interfaces";
 import { BigNumber } from "bignumber.js";
@@ -70,10 +70,12 @@ export default function Price({ symbol, color }: PriceParams) {
     const [price, timestamp, decimals] = await ftsoRegistry[
       "getCurrentPriceWithDecimals(string)"
     ](symbol);
-    const assetPrice =
-      new BigNumber(price).toNumber() /
-      100 ** new BigNumber(decimals).toNumber();
+
+    const assetPrice = formatUnits(price, decimals);
     const time = new Date(Number(timestamp) * 1000);
+
+    console.log(symbol);
+    console.log(assetPrice);
 
     let USDollar = new Intl.NumberFormat("en-US", {
       style: "currency",
