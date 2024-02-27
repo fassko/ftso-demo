@@ -31,8 +31,6 @@ export default function History({ symbol, color }: HistoryParams) {
     const ftsoRegistryAddress =
       await flareContractRegistry.getContractAddressByName("FtsoRegistry");
 
-    console.log(ftsoRegistryAddress);
-
     // convert to FTSO registry contract
     // https://docs.flare.network/apis/smart-contracts/FtsoRegistry/
     const ftsoRegistry = new ethers.Contract(
@@ -41,13 +39,9 @@ export default function History({ symbol, color }: HistoryParams) {
       provider
     );
 
-    console.log("Symbol", symbol);
-
     const [address] = await ftsoRegistry["getFtsoBySymbol(string)"](symbol);
 
     const ftsoAddress = await ftsoRegistry["getFtsoBySymbol(string)"](symbol);
-
-    console.log("address", ftsoAddress);
 
     const ftso = new ethers.Contract(
       ftsoAddress,
@@ -58,8 +52,6 @@ export default function History({ symbol, color }: HistoryParams) {
     const currentEpochId = new BigNumber(
       await ftso["getCurrentEpochId()"]()
     ).toNumber();
-
-    console.log("currentEpochId", currentEpochId);
 
     const prevPrice = new BigNumber(
       await ftso["getEpochPrice(uint256)"](currentEpochId - 1)
