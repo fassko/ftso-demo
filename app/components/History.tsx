@@ -65,8 +65,6 @@ export default function History({ symbol, color }: HistoryParams) {
       await ftso["getEpochPrice(uint256)"](currentEpochId - 1)
     ).toNumber();
 
-    console.log("prevPrice", prevPrice);
-
     const decimals = new BigNumber(
       await ftso["ASSET_PRICE_USD_DECIMALS()"]()
     ).toNumber();

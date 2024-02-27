@@ -7,7 +7,7 @@ import { ethers } from "ethers";
 import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
 import { EpochData } from "../Interfaces";
 
-export default function PriceReveal() {
+export default function EpochInfo() {
   const [epochData, setEpochData] = useState<EpochData>();
   const [currentEpochPercentage, setCurrentEpochPercentage] = useState(0);
 
@@ -31,7 +31,6 @@ export default function PriceReveal() {
   }
 
   const getPriceReveal = useCallback(async () => {
-    console.log("Getting epoch information");
     const provider = new ethers.JsonRpcProvider(FLARE_RCP);
     // get Flare contract registry
     // https://docs.flare.network/dev/getting-started/contract-addresses/
@@ -54,11 +53,6 @@ export default function PriceReveal() {
       priceEpochRevealEndTimestamp,
       currentTimestamp,
     ] = await ftsoManager.getCurrentPriceEpochData();
-
-    console.log("currentTimestamp: ftso", currentTimestamp);
-    const timestampWithMilliseconds = Date.now();
-    const currentTimestampJS = Math.floor(timestampWithMilliseconds / 1000);
-    console.log("currentTimestampJS", currentTimestampJS);
 
     setEpochData({
       priceEpochId: Number(priceEpochId),

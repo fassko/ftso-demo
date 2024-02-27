@@ -6,22 +6,21 @@ import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
 import { ethers, formatUnits } from "ethers";
 import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
 import { EpochData } from "../Interfaces";
-import { BigNumber } from "bignumber.js";
 import { Accordion } from "@mantine/core";
 import History from "./History";
 
-interface PriceParams {
+interface TokenParams {
   symbol: string;
   color: string;
 }
 
-interface PriceDetails {
+interface TokenDetails {
   price: string;
   time: Date;
 }
 
-export default function Price({ symbol, color }: PriceParams) {
-  const [assetPrice, setAssetPrice] = useState<PriceDetails>();
+export default function Token({ symbol, color }: TokenParams) {
+  const [assetPrice, setAssetPrice] = useState<TokenDetails>();
   const [epochData, setEpochData] = useState<EpochData>();
 
   function onRefresh() {
@@ -30,8 +29,6 @@ export default function Price({ symbol, color }: PriceParams) {
 
   const getAssetPrice = useCallback(async (symbol: string) => {
     setAssetPrice(undefined);
-
-    console.log(`Getting ${symbol} price ...`);
 
     const provider = new ethers.JsonRpcProvider(FLARE_RCP);
 
@@ -74,9 +71,6 @@ export default function Price({ symbol, color }: PriceParams) {
     const assetPrice = formatUnits(price, decimals);
     const time = new Date(Number(timestamp) * 1000);
 
-    console.log(symbol);
-    console.log(assetPrice);
-
     let USDollar = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
@@ -93,15 +87,6 @@ export default function Price({ symbol, color }: PriceParams) {
       priceEpochRevealEndTimestamp,
       currentTimestamp,
     ] = await ftsoManager.getCurrentPriceEpochData();
-    console.log("priceEpochId", priceEpochId);
-    console.log("priceEpochStartTimestamp", priceEpochStartTimestamp);
-    console.log("priceEpochEndTimestamp", priceEpochEndTimestamp);
-    console.log(
-      "priceEpocpriceEpochRevealEndTimestamphId",
-      priceEpochRevealEndTimestamp
-    );
-    console.log("currentTimestamp", currentTimestamp);
-
     setEpochData({
       priceEpochId: Number(priceEpochId),
       priceEpochStartTimestamp: Number(priceEpochStartTimestamp),
