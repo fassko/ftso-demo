@@ -1,29 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
+
 import { EpochData } from "../interfaces/EpochData";
 import Flare from "../web3/flare";
 
-const getPriceRevealFromBlockchain = async () => {
+async function getPriceRevealFromBlockchain() {
   const flare = Flare();
-  const ftsoManager = await flare.getContract("FtsoManager");
-
-  const [
-    priceEpochId,
-    priceEpochStartTimestamp,
-    priceEpochEndTimestamp,
-    priceEpochRevealEndTimestamp,
-    currentTimestamp,
-  ] = await ftsoManager.getCurrentPriceEpochData();
+  const currentPriceEpoch = await flare.getCurrentPriceEpoch();
 
   return {
-    priceEpochId: Number(priceEpochId),
-    priceEpochStartTimestamp: Number(priceEpochStartTimestamp),
-    priceEpochEndTimestamp: Number(priceEpochEndTimestamp),
-    priceEpochRevealEndTimestamp: Number(priceEpochRevealEndTimestamp),
-    currentTimestamp: Number(currentTimestamp),
+    priceEpochId: currentPriceEpoch.priceEpochId,
+    priceEpochStartTimestamp: currentPriceEpoch.priceEpochStartTimestamp,
+    priceEpochEndTimestamp: currentPriceEpoch.priceEpochEndTimestamp,
+    priceEpochRevealEndTimestamp:
+      currentPriceEpoch.priceEpochRevealEndTimestamp,
+    currentTimestamp: currentPriceEpoch.currentTimestamp,
   };
-};
+}
 
-const fetchEpochData = async () => {
+async function fetchEpochData() {
   try {
     const data = await getPriceRevealFromBlockchain();
     return data;
@@ -31,9 +25,9 @@ const fetchEpochData = async () => {
     console.error("Error fetching epoch data:", error);
     return null;
   }
-};
+}
 
-const useEpochInfo = () => {
+function useEpochInfo() {
   const [epochData, setEpochData] = useState<EpochData>();
   const [currentEpochPercentage, setCurrentEpochPercentage] =
     useState<number>(0);
@@ -106,6 +100,6 @@ const useEpochInfo = () => {
     convertToDate,
     onRefresh,
   };
-};
+}
 
 export default useEpochInfo;

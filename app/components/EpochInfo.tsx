@@ -1,4 +1,5 @@
 "use client";
+
 import useEpochInfo from "../hooks/useEpochInfo";
 
 export default function EpochInfo() {

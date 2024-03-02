@@ -9,7 +9,7 @@ interface HistoryParams {
 }
 
 export default function History({ symbol, color }: HistoryParams) {
-  const chartData = useAssetHistoryPrice(symbol);
+  const chartData = useAssetHistoryPrice({ symbol });
 
   return (
     <div className="max-h-80 mx-auto">

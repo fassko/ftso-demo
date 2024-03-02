@@ -1,6 +1,7 @@
 "use client";
 
 import { Accordion } from "@mantine/core";
+
 import History from "./History";
 import useAssetPrice from "../hooks/useAssetPrice";
 

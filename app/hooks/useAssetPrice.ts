@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { formatUnits } from "ethers";
+
 import { EpochData } from "../interfaces/EpochData";
 import Flare from "../web3/flare";
 
@@ -8,10 +9,13 @@ interface TokenDetails {
   time: Date;
 }
 
-const getPriceFromBlockchain = async (symbol: string) => {
+interface GetPriceFromBlockchainProps {
+  symbol: string;
+}
+
+async function getPriceFromBlockchain(symbol: string) {
   const flare = Flare();
 
-  const ftsoManager = await flare.getContract("FtsoManager");
   const ftsoRegistry = await flare.getContract("FtsoRegistry");
 
   const [price, timestamp, decimals] = await ftsoRegistry[
@@ -33,26 +37,21 @@ const getPriceFromBlockchain = async (symbol: string) => {
     time,
   };
 
-  const [
-    priceEpochId,
-    priceEpochStartTimestamp,
-    priceEpochEndTimestamp,
-    priceEpochRevealEndTimestamp,
-    currentTimestamp,
-  ] = await ftsoManager.getCurrentPriceEpochData();
+  const currentPriceEpoch = await flare.getCurrentPriceEpoch();
 
   const epochData = {
-    priceEpochId: Number(priceEpochId),
-    priceEpochStartTimestamp: Number(priceEpochStartTimestamp),
-    priceEpochEndTimestamp: Number(priceEpochEndTimestamp),
-    priceEpochRevealEndTimestamp: Number(priceEpochRevealEndTimestamp),
-    currentTimestamp: Number(currentTimestamp),
+    priceEpochId: currentPriceEpoch.priceEpochId,
+    priceEpochStartTimestamp: currentPriceEpoch.priceEpochStartTimestamp,
+    priceEpochEndTimestamp: currentPriceEpoch.priceEpochEndTimestamp,
+    priceEpochRevealEndTimestamp:
+      currentPriceEpoch.priceEpochRevealEndTimestamp,
+    currentTimestamp: currentPriceEpoch.currentTimestamp,
   };
 
   return { assetPrice, epochData };
-};
+}
 
-const useAssetPrice = (symbol: string) => {
+function useAssetPrice(symbol: string) {
   const [assetPrice, setAssetPrice] = useState<TokenDetails>();
   const [epochData, setEpochData] = useState<EpochData>();
 
@@ -83,6 +82,6 @@ const useAssetPrice = (symbol: string) => {
   }, [epochData, getAssetPrice]);
 
   return { assetPrice, epochData };
-};
+}
 
 export default useAssetPrice;

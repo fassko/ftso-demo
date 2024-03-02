@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
-import { ethers } from "ethers";
-import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
 import Flare from "../web3/flare";
 
 interface AssetHistoryPriceData {
@@ -10,7 +7,11 @@ interface AssetHistoryPriceData {
   price: number;
 }
 
-const useAssetHistoryPrice = (symbol: string) => {
+interface UseAssetHistoryProps {
+  symbol: string;
+}
+
+function useAssetHistoryPrice({ symbol }: UseAssetHistoryProps) {
   const [chartData, setChartData] = useState<AssetHistoryPriceData[] | null>(
     null
   );
@@ -48,6 +49,6 @@ const useAssetHistoryPrice = (symbol: string) => {
   }, [getAssetHistoryPrice]);
 
   return chartData;
-};
+}
 
 export default useAssetHistoryPrice;
