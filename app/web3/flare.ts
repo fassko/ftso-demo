@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
-import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
+import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RPC } from "../Constants";
 import {
   FlareContractRegistry,
   FtsoRegistry,
@@ -11,7 +11,7 @@ import { Ftso, FtsoManager } from "../contracts/ftso/implementation";
 type JsonRpcProviderType = ethers.JsonRpcProvider;
 
 export default function Flare() {
-  const provider: JsonRpcProviderType = new ethers.JsonRpcProvider(FLARE_RCP);
+  const provider: JsonRpcProviderType = new ethers.JsonRpcProvider(FLARE_RPC);
 
   // Function to initialize the Flare Contract Registry
   function getFlareContractRegistry() {
@@ -48,7 +48,7 @@ export default function Flare() {
     return new ethers.Contract(
       ftsoAddress,
       nameToAbi("Ftso", "flare").data,
-      new ethers.JsonRpcProvider(FLARE_RCP)
+      new ethers.JsonRpcProvider(FLARE_RPC)
     ) as unknown as Ftso;
   }
 
