@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { formatUnits } from "ethers";
 
 import { EpochData } from "../interfaces/EpochData";
 import Flare from "../web3/flare";
@@ -16,24 +15,20 @@ interface GetPriceFromBlockchainProps {
 async function getPriceFromBlockchain(symbol: string) {
   const flare = Flare();
 
-  const ftsoRegistry = await flare.getContract("FtsoRegistry");
+  const priceData = await flare.getPrice(symbol);
 
-  const [price, timestamp, decimals] = await ftsoRegistry[
-    "getCurrentPriceWithDecimals(string)"
-  ](symbol);
-
-  const assetPriceValue = formatUnits(price, decimals);
-  const time = new Date(Number(timestamp) * 1000);
+  const formattedPrice = priceData.price / 10 ** priceData.decimals;
+  const time = new Date(priceData.timestamp * 1000);
 
   let USDollar = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
-    maximumFractionDigits: Number(decimals),
+    maximumFractionDigits: Number(priceData.decimals),
   });
 
   const assetPrice = {
-    price: USDollar.format(Number(assetPriceValue)),
+    price: USDollar.format(Number(formattedPrice)),
     time,
   };
 

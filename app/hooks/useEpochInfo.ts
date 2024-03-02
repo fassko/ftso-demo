@@ -3,24 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 import { EpochData } from "../interfaces/EpochData";
 import Flare from "../web3/flare";
 
-async function getPriceRevealFromBlockchain() {
+async function getEpochDataFromBlockchain() {
   const flare = Flare();
-  const currentPriceEpoch = await flare.getCurrentPriceEpoch();
 
-  return {
-    priceEpochId: currentPriceEpoch.priceEpochId,
-    priceEpochStartTimestamp: currentPriceEpoch.priceEpochStartTimestamp,
-    priceEpochEndTimestamp: currentPriceEpoch.priceEpochEndTimestamp,
-    priceEpochRevealEndTimestamp:
-      currentPriceEpoch.priceEpochRevealEndTimestamp,
-    currentTimestamp: currentPriceEpoch.currentTimestamp,
-  };
-}
-
-async function fetchEpochData() {
   try {
-    const data = await getPriceRevealFromBlockchain();
-    return data;
+    const currentPriceEpoch = await flare.getCurrentPriceEpoch();
+    return currentPriceEpoch;
   } catch (error) {
     console.error("Error fetching epoch data:", error);
     return null;
@@ -45,7 +33,7 @@ function useEpochInfo() {
   };
 
   const getPriceReveal = useCallback(async () => {
-    const data = await fetchEpochData();
+    const data = await getEpochDataFromBlockchain();
     if (data) {
       setEpochData(data);
       setCurrentEpochPercentage(

@@ -68,11 +68,43 @@ export default function Flare() {
     };
   }
 
+  async function getPrice(symbol: string) {
+    const ftsoRegistry = await getContract("FtsoRegistry");
+
+    const [price, timestamp, decimals] = await ftsoRegistry[
+      "getCurrentPriceWithDecimals(string)"
+    ](symbol);
+
+    return {
+      price: Number(price),
+      timestamp: Number(timestamp),
+      decimals: Number(decimals),
+    };
+  }
+
+  async function getCurrentEpochId(symbol: string) {
+    const ftso = await getFtso(symbol);
+
+    return Number(BigInt(await ftso.getCurrentEpochId()));
+  }
+
+  async function getDecimals(symbol: string) {
+    const ftso = await getFtso(symbol);
+
+    return Number(BigInt(await ftso.ASSET_PRICE_USD_DECIMALS()));
+  }
+
+  async function getEpochPrice(symbol: string, epochId: number) {
+    const ftso = await getFtso(symbol);
+
+    return Number(BigInt(await ftso.getEpochPrice(epochId)));
+  }
+
   return {
-    getFlareContractRegistry,
-    getContractAddressByName,
-    getContract,
-    getFtso,
+    getPrice,
     getCurrentPriceEpoch,
+    getCurrentEpochId,
+    getDecimals,
+    getEpochPrice,
   };
 }

@@ -18,17 +18,16 @@ function useAssetHistoryPrice({ symbol }: UseAssetHistoryProps) {
 
   const getAssetHistoryPrice = useCallback(async () => {
     const flare = Flare();
-    const ftso = await flare.getFtso(symbol);
 
-    const currentEpochId = Number(BigInt(await ftso.getCurrentEpochId()));
-    const decimals = Number(BigInt(await ftso.ASSET_PRICE_USD_DECIMALS()));
+    const currentEpochId = await flare.getCurrentEpochId(symbol);
+    const decimals = await flare.getDecimals(symbol);
 
     const prevPrices = await Promise.all(
       [...Array(10)].map(async (_, i) => {
         const epochId = currentEpochId - i;
 
         try {
-          const price = Number(BigInt(await ftso.getEpochPrice(epochId)));
+          const price = await flare.getEpochPrice(symbol, epochId);
           return {
             epochId: epochId,
             price: price / 10 ** decimals,
