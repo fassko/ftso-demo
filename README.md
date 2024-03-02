@@ -1,9 +1,9 @@
 # Flare Time Series Oracle Demo
 
-Before everything install dependencies and init the project.
+Before everything install dependencies.
 
 ```bash
-npm install && npm run init
+npm install
 ```
 
 Run the development server:
