@@ -11,32 +11,13 @@ interface AssetHistoryPriceData {
 }
 
 const useAssetHistoryPrice = (symbol: string) => {
-  const flare = Flare();
-
   const [chartData, setChartData] = useState<AssetHistoryPriceData[] | null>(
     null
   );
 
   const getAssetHistoryPrice = useCallback(async () => {
-    const provider = new ethers.JsonRpcProvider(FLARE_RCP);
-
-    const flareContractRegistry = new ethers.Contract(
-      FLARE_CONTRACT_REGISTRY_ADDRESS,
-      nameToAbi("FlareContractRegistry", "flare").data,
-      provider
-    );
-
-    const ftsoRegistryAddress =
-      await flareContractRegistry.getContractAddressByName("FtsoRegistry");
-
-    const ftsoRegistry = await flare.getContract("FtsoRegistry");
-
-    const ftsoAddress = await ftsoRegistry.getFtsoBySymbol(symbol);
-    const ftso = new ethers.Contract(
-      ftsoAddress,
-      nameToAbi("Ftso", "flare").data,
-      provider
-    );
+    const flare = Flare();
+    const ftso = await flare.getFtso(symbol);
 
     const currentEpochId = Number(BigInt(await ftso.getCurrentEpochId()));
     const decimals = Number(BigInt(await ftso.ASSET_PRICE_USD_DECIMALS()));

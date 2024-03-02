@@ -35,9 +35,21 @@ export default function Flare() {
     );
   };
 
+  const getFtso = async (symbol: string) => {
+    const ftsoRegistry = await getContract("FtsoRegistry");
+
+    const ftsoAddress = await ftsoRegistry.getFtsoBySymbol(symbol);
+    return new ethers.Contract(
+      ftsoAddress,
+      nameToAbi("Ftso", "flare").data,
+      new ethers.JsonRpcProvider(FLARE_RCP)
+    );
+  };
+
   return {
     getFlareContractRegistry,
     getContractAddressByName,
     getContract,
+    getFtso,
   };
 }
