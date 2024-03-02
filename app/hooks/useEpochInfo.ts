@@ -1,23 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { ethers } from "ethers";
-import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
-import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
 import { EpochData } from "../interfaces/EpochData";
+import Flare from "../web3/flare";
 
 const getPriceRevealFromBlockchain = async () => {
-  const provider = new ethers.JsonRpcProvider(FLARE_RCP);
-  const flareContractRegistry = new ethers.Contract(
-    FLARE_CONTRACT_REGISTRY_ADDRESS,
-    nameToAbi("FlareContractRegistry", "flare").data,
-    provider
-  );
-  const ftsoManagerAddress =
-    await flareContractRegistry.getContractAddressByName("FtsoManager");
-  const ftsoManager = new ethers.Contract(
-    ftsoManagerAddress,
-    nameToAbi("FtsoManager", "flare").data,
-    provider
-  );
+  const flare = Flare();
+  const ftsoManager = await flare.getContract("FtsoManager");
+
   const [
     priceEpochId,
     priceEpochStartTimestamp,

@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { ethers, formatUnits } from "ethers";
-import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
-import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
+import { formatUnits } from "ethers";
 import { EpochData } from "../interfaces/EpochData";
+import Flare from "../web3/flare";
 
 interface TokenDetails {
   price: string;
@@ -10,31 +9,10 @@ interface TokenDetails {
 }
 
 const getPriceFromBlockchain = async (symbol: string) => {
-  const provider = new ethers.JsonRpcProvider(FLARE_RCP);
+  const flare = Flare();
 
-  const flareContractRegistry = new ethers.Contract(
-    FLARE_CONTRACT_REGISTRY_ADDRESS,
-    nameToAbi("FlareContractRegistry", "flare").data,
-    provider
-  );
-
-  const ftsoRegistryAddress =
-    await flareContractRegistry.getContractAddressByName("FtsoRegistry");
-
-  const ftsoManagerAddress =
-    await flareContractRegistry.getContractAddressByName("FtsoManager");
-
-  const ftsoManager = new ethers.Contract(
-    ftsoManagerAddress,
-    nameToAbi("FtsoManager", "flare").data,
-    provider
-  );
-
-  const ftsoRegistry = new ethers.Contract(
-    ftsoRegistryAddress,
-    nameToAbi("FtsoRegistry", "flare").data,
-    provider
-  );
+  const ftsoManager = await flare.getContract("FtsoManager");
+  const ftsoRegistry = await flare.getContract("FtsoRegistry");
 
   const [price, timestamp, decimals] = await ftsoRegistry[
     "getCurrentPriceWithDecimals(string)"

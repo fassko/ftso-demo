@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { nameToAbi } from "@flarenetwork/flare-periphery-contract-artifacts";
 import { ethers } from "ethers";
 import { FLARE_CONTRACT_REGISTRY_ADDRESS, FLARE_RCP } from "../Constants";
+import Flare from "../web3/flare";
 
 interface AssetHistoryPriceData {
   epochId: number;
@@ -10,6 +11,8 @@ interface AssetHistoryPriceData {
 }
 
 const useAssetHistoryPrice = (symbol: string) => {
+  const flare = Flare();
+
   const [chartData, setChartData] = useState<AssetHistoryPriceData[] | null>(
     null
   );
@@ -26,14 +29,9 @@ const useAssetHistoryPrice = (symbol: string) => {
     const ftsoRegistryAddress =
       await flareContractRegistry.getContractAddressByName("FtsoRegistry");
 
-    const ftsoRegistry = new ethers.Contract(
-      ftsoRegistryAddress,
-      nameToAbi("FtsoRegistry", "flare").data,
-      provider
-    );
+    const ftsoRegistry = await flare.getContract("FtsoRegistry");
 
     const ftsoAddress = await ftsoRegistry.getFtsoBySymbol(symbol);
-
     const ftso = new ethers.Contract(
       ftsoAddress,
       nameToAbi("Ftso", "flare").data,
